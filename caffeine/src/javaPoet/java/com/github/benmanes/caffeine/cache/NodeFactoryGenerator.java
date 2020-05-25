@@ -36,8 +36,10 @@ import static com.github.benmanes.caffeine.cache.Specifications.valueRefQueueSpe
 import static com.github.benmanes.caffeine.cache.Specifications.valueSpec;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Year;
@@ -63,11 +65,14 @@ import com.github.benmanes.caffeine.cache.node.AddValue;
 import com.github.benmanes.caffeine.cache.node.Finalize;
 import com.github.benmanes.caffeine.cache.node.NodeContext;
 import com.github.benmanes.caffeine.cache.node.NodeRule;
+import com.google.common.base.CaseFormat;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
+import com.google.googlejavaformat.java.Formatter;
+import com.google.googlejavaformat.java.FormatterException;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
@@ -124,6 +129,7 @@ public final class NodeFactoryGenerator {
     generatedNodes();
     addNewFactoryMethods();
     writeJavaFile();
+    reformat();
   }
 
   private void writeJavaFile() throws IOException {
@@ -133,13 +139,28 @@ public final class NodeFactoryGenerator {
         .indent("  ")
         .build()
         .writeTo(directory);
-
     for (TypeSpec node : nodeTypes) {
       JavaFile.builder(getClass().getPackage().getName(), node)
-              .addFileComment(header, Year.now(timeZone))
-              .indent("  ")
-              .build()
-              .writeTo(directory);
+          .addFileComment(header, Year.now(timeZone))
+          .indent("  ")
+          .build()
+          .writeTo(directory);
+    }
+  }
+
+  private void reformat() throws IOException {
+    try (var stream = Files.walk(directory)) {
+      List<Path> files = stream
+          .filter(path -> path.toString().endsWith(".java"))
+          .collect(toList());
+      Formatter formatter = new Formatter();
+      for (var file : files) {
+        String source = Files.readString(file);
+        String formatted = formatter.formatSourceAndFixImports(source);
+        Files.writeString(file, formatted);
+      }
+    } catch (FormatterException e) {
+      throw new RuntimeException(e);
     }
   }
 
@@ -149,7 +170,17 @@ public final class NodeFactoryGenerator {
         .addJavadoc("\n@author ben.manes@gmail.com (Ben Manes)\n");
   }
 
+
   private void addConstants() {
+    List<String> constants = ImmutableList.of("key", "value", "accessTime", "writeTime");
+    for (String constant : constants) {
+      String name = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, constant);
+      nodeFactory.addField(FieldSpec.builder(String.class, name)
+          .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
+          .initializer("$S", constant)
+          .build());
+    }
+
     Modifier[] modifiers = {Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL};
     nodeFactory.addField(FieldSpec.builder(Object.class, RETIRED_STRONG_KEY, modifiers)
         .initializer("new Object()")

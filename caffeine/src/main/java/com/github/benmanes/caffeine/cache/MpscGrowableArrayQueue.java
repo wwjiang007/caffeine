@@ -13,8 +13,8 @@
  */
 package com.github.benmanes.caffeine.cache;
 
-import static com.github.benmanes.caffeine.base.UnsafeAccess.UNSAFE;
 import static com.github.benmanes.caffeine.cache.Caffeine.ceilingPowerOfTwo;
+import static com.github.benmanes.caffeine.cache.UnsafeAccess.UNSAFE;
 import static com.github.benmanes.caffeine.cache.UnsafeRefArrayAccess.REF_ARRAY_BASE;
 import static com.github.benmanes.caffeine.cache.UnsafeRefArrayAccess.REF_ELEMENT_SHIFT;
 import static com.github.benmanes.caffeine.cache.UnsafeRefArrayAccess.lvElement;

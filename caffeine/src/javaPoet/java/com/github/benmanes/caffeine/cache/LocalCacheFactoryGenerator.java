@@ -22,8 +22,10 @@ import static com.github.benmanes.caffeine.cache.Specifications.kTypeVar;
 import static com.github.benmanes.caffeine.cache.Specifications.vTypeVar;
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static java.util.Objects.requireNonNull;
+import static java.util.stream.Collectors.toList;
 
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.Year;
@@ -48,23 +50,23 @@ import com.github.benmanes.caffeine.cache.local.AddExpireAfterWrite;
 import com.github.benmanes.caffeine.cache.local.AddFastPath;
 import com.github.benmanes.caffeine.cache.local.AddKeyValueStrength;
 import com.github.benmanes.caffeine.cache.local.AddMaximum;
+import com.github.benmanes.caffeine.cache.local.AddPacer;
 import com.github.benmanes.caffeine.cache.local.AddRefreshAfterWrite;
 import com.github.benmanes.caffeine.cache.local.AddRemovalListener;
-import com.github.benmanes.caffeine.cache.local.AddPacer;
 import com.github.benmanes.caffeine.cache.local.AddStats;
 import com.github.benmanes.caffeine.cache.local.AddSubtype;
 import com.github.benmanes.caffeine.cache.local.AddWriteBuffer;
 import com.github.benmanes.caffeine.cache.local.Finalize;
 import com.github.benmanes.caffeine.cache.local.LocalCacheContext;
 import com.github.benmanes.caffeine.cache.local.LocalCacheRule;
-import com.google.common.base.CaseFormat;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.google.common.io.Resources;
+import com.google.googlejavaformat.java.Formatter;
+import com.google.googlejavaformat.java.FormatterException;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
@@ -103,11 +105,10 @@ public final class LocalCacheFactoryGenerator {
         .addModifiers(Modifier.FINAL)
         .addMethod(MethodSpec.constructorBuilder().addModifiers(Modifier.PRIVATE).build());
     addClassJavaDoc();
-    addConstants();
-
     generateLocalCaches();
     addFactoryMethods();
     writeJavaFile();
+    reformat();
   }
 
   private void addFactoryMethods() {
@@ -134,31 +135,26 @@ public final class LocalCacheFactoryGenerator {
 
     for (TypeSpec typeSpec : factoryTypes) {
       JavaFile.builder(getClass().getPackage().getName(), typeSpec)
-              .addFileComment(header, Year.now(timeZone))
-              .indent("  ")
-              .build()
-              .writeTo(directory);
+          .addFileComment(header, Year.now(timeZone))
+          .indent("  ")
+          .build()
+          .writeTo(directory);
     }
   }
 
-  private void addConstants() {
-    List<String> constants = ImmutableList.of("maximum", "windowMaximum", "mainProtectedMaximum",
-        "weightedSize", "windowWeightedSize", "mainProtectedWeightedSize");
-    for (String constant : constants) {
-      String name = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, constant);
-      factory.addField(FieldSpec.builder(String.class, name)
-          .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-          .initializer("$S", constant)
-          .build());
-    }
-
-    constants = ImmutableList.of("key", "value", "accessTime", "writeTime");
-    for (String constant : constants) {
-      String name = CaseFormat.LOWER_CAMEL.to(CaseFormat.UPPER_UNDERSCORE, constant);
-      factory.addField(FieldSpec.builder(String.class, name)
-              .addModifiers(Modifier.PUBLIC, Modifier.STATIC, Modifier.FINAL)
-              .initializer("$S", constant)
-              .build());
+  private void reformat() throws IOException {
+    try (var stream = Files.walk(directory)) {
+      List<Path> files = stream
+          .filter(path -> path.toString().endsWith(".java"))
+          .collect(toList());
+      Formatter formatter = new Formatter();
+      for (var file : files) {
+        String source = Files.readString(file);
+        String formatted = formatter.formatSourceAndFixImports(source);
+        Files.writeString(file, formatted);
+      }
+    } catch (FormatterException e) {
+      throw new RuntimeException(e);
     }
   }
 

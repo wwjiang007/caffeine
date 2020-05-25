@@ -15,8 +15,6 @@
  */
 package com.github.benmanes.caffeine.cache;
 
-import com.github.benmanes.caffeine.base.UnsafeAccess;
-
 /**
  * A hook to enforce that a predictable random seed is used by Caffeine's caches.
  *

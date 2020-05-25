@@ -18,7 +18,8 @@ package com.github.benmanes.caffeine.cache.buffer;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
-import com.github.benmanes.caffeine.base.UnsafeAccess;
+import org.jctools.util.UnsafeAccess;
+
 import com.github.benmanes.caffeine.cache.ReadBuffer;
 
 /**
@@ -105,7 +106,7 @@ final class FastFlowHeader {
   /** Enforces a memory layout to avoid false sharing by padding the read count. */
   abstract static class ReadCacheRef<E> extends PadReadCache<E> {
     static final long READ_CACHE_OFFSET =
-        UnsafeAccess.objectFieldOffset(ReadCacheRef.class, "readCache");
+        UnsafeAccess.fieldOffset(ReadCacheRef.class, "readCache");
 
     volatile long readCache;
 
@@ -122,7 +123,7 @@ final class FastFlowHeader {
   /** Enforces a memory layout to avoid false sharing by padding the read count. */
   abstract static class ReadCounterRef<E> extends PadReadCounter<E> {
     static final long READ_OFFSET =
-        UnsafeAccess.objectFieldOffset(ReadCounterRef.class, "readCounter");
+        UnsafeAccess.fieldOffset(ReadCounterRef.class, "readCounter");
 
     volatile long readCounter;
 
@@ -139,7 +140,7 @@ final class FastFlowHeader {
   /** Enforces a memory layout to avoid false sharing by padding the write count. */
   abstract static class ReadAndWriteCounterRef<E> extends PadWriteCounter<E> {
     static final long WRITE_OFFSET =
-        UnsafeAccess.objectFieldOffset(ReadAndWriteCounterRef.class, "writeCounter");
+        UnsafeAccess.fieldOffset(ReadAndWriteCounterRef.class, "writeCounter");
 
     volatile long writeCounter;
 
