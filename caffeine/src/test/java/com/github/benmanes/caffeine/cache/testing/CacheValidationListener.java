@@ -44,7 +44,7 @@ import com.github.benmanes.caffeine.cache.AsyncLoadingCache;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.Policy.Eviction;
-import com.github.benmanes.caffeine.cache.Policy.Expiration;
+import com.github.benmanes.caffeine.cache.Policy.FixedExpiration;
 import com.github.benmanes.caffeine.cache.Policy.VarExpiration;
 import com.github.benmanes.caffeine.cache.testing.CacheSpec.ExecutorFailure;
 
@@ -176,7 +176,7 @@ public final class CacheValidationListener implements IInvokedMethodListener {
       Object param = params[i];
       if ((param instanceof AsyncCache<?, ?>) || (param instanceof Cache<?, ?>)
           || (param instanceof Map<?, ?>) || (param instanceof Eviction<?, ?>)
-          || (param instanceof Expiration<?, ?>) || (param instanceof VarExpiration<?, ?>)
+          || (param instanceof FixedExpiration<?, ?>) || (param instanceof VarExpiration<?, ?>)
           || ((param instanceof CacheContext) && briefParams)) {
         params[i] = simpleNames.get(param.getClass(), key -> ((Class<?>) key).getSimpleName());
       } else if (param instanceof CacheContext) {
