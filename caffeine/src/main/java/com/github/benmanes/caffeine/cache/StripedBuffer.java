@@ -287,7 +287,7 @@ abstract class StripedBuffer<E> implements Buffer<E> {
       try {
         probe = supplier.get();
         break;
-      } catch (Throwable ignored) {}
+      } catch (Throwable ignored) { /* Try next strategy */ }
     }
     PROBE = requireNonNull(probe, "Unable to determine a probe strategy");
   }
