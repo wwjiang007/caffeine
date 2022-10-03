@@ -48,7 +48,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Set up JDK ${{ matrix.java }}
-        uses: Wandalen/wretry.action@v1.0.20
+        uses: Wandalen/wretry.action@v1.0.35
         timeout-minutes: 5
         with:
           action: actions/setup-java@v3
@@ -58,7 +58,7 @@ jobs:
           attempt_limit: 3
           attempt_delay: 2000
       - name: Setup Gradle
-        uses: Wandalen/wretry.action@v1.0.20
+        uses: Wandalen/wretry.action@v1.0.35
         timeout-minutes: 5
         with:
           action: gradle/gradle-build-action@v2
@@ -155,7 +155,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
       - name: Set up JDK ${{ matrix.java }}
-        uses: Wandalen/wretry.action@v1.0.20
+        uses: Wandalen/wretry.action@v1.0.35
         timeout-minutes: 5
         with:
           action: actions/setup-java@v3
@@ -165,7 +165,7 @@ jobs:
           attempt_limit: 3
           attempt_delay: 2000
       - name: Setup Gradle
-        uses: Wandalen/wretry.action@v1.0.20
+        uses: Wandalen/wretry.action@v1.0.35
         timeout-minutes: 5
         with:
           action: gradle/gradle-build-action@v2
@@ -236,7 +236,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Set up JDK ${{ env.MAX_JVM }}
-        uses: Wandalen/wretry.action@v1.0.20
+        uses: Wandalen/wretry.action@v1.0.35
         with:
           action: actions/setup-java@v3
           with: |
@@ -245,7 +245,7 @@ jobs:
           attempt_limit: 3
           attempt_delay: 2000
       - name: Setup Gradle
-        uses: Wandalen/wretry.action@v1.0.20
+        uses: Wandalen/wretry.action@v1.0.35
         timeout-minutes: 5
         with:
           action: gradle/gradle-build-action@v2
@@ -361,7 +361,7 @@ jobs:
             guava.dev:443
       - uses: actions/checkout@v3
       - name: Set up JDK ${{ env.MIN_JVM }}
-        uses: Wandalen/wretry.action@v1.0.20
+        uses: Wandalen/wretry.action@v1.0.35
         with:
           action: actions/setup-java@v3
           with: |
@@ -370,7 +370,7 @@ jobs:
           attempt_limit: 3
           attempt_delay: 2000
       - name: Setup Gradle
-        uses: Wandalen/wretry.action@v1.0.20
+        uses: Wandalen/wretry.action@v1.0.35
         timeout-minutes: 5
         with:
           action: gradle/gradle-build-action@v2
