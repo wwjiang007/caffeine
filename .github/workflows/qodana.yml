@@ -61,6 +61,6 @@ jobs:
       - name: Qodana - Code Inspection
         uses: JetBrains/qodana-action@61b94e7e3a716dcb9e2030cfd79cd46149d56c26 # v2023.1.0
       - name: Upload SARIF file for GitHub Advanced Security Dashboard
-        uses: github/codeql-action/upload-sarif@83f0fe6c4988d98a455712a27f0255212bba9bd4 # v2.3.6
+        uses: github/codeql-action/upload-sarif@004c5de30b6423267685b897a3d595e944f7fed5 # v2.20.2
         with:
           sarif_file: ${{ runner.temp }}/qodana/results/qodana.sarif.json
